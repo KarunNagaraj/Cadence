@@ -1,8 +1,10 @@
+import { Loader } from "lucide-react";
 const HomePage= () => {
     return (
-      <div>
-        <h1>Welcome to Cadence</h1>
-      </div>
+      <div className='h-screen w-full flex flex-col items-center justify-center'>
+        <h1 className='text-3xl font-bold p-6'>Home Page Loading</h1>
+				<Loader className='size-8 text-emerald-500 animate-spin' />
+			</div>
     )
   }
 
