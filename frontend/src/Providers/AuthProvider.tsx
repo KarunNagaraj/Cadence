@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/clerk-react"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import axiosInstance from "../lib/axios"
+import { Loader } from "lucide-react";
 
 
 const updateApiToken = (token: string | null) => {
@@ -9,7 +10,7 @@ const updateApiToken = (token: string | null) => {
 };
 
 
-const AuthProvider = () => {
+const AuthProvider = ({children}:{children:React.ReactNode}) => {
     const { getToken,userId } = useAuth()
     const [loading, setLoading] = useState(true)
 
@@ -24,9 +25,20 @@ const AuthProvider = () => {
                 updateApiToken(null)
                 console.error("Error fetching auth token:", error)
             }
+            finally {
+				setLoading(false);
+			}
         }
        initAuth();
     },[getToken])
-     return <div>Auth provider</div>
+
+    if(loading) {
+        return (
+            <div className="h-screen w-screen flex items-center justify-center">
+        <Loader className="size-8 text-red-500 animate-spin" />
+        </div>
+        )
+    }
+     return <div>{children}</div>
 }
 export default AuthProvider;
