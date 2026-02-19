@@ -6,7 +6,7 @@ const router = Router();
 router.post('/callback', async (req,res)=>{
     try{
     const {id, firstName, lastName, imageUrl} = req.body;
-    const user = User.findOne({clerkId:id})
+    const user = await User.findOne({clerkId:id})
     if(!user) {
         //signup
         await User.create({
