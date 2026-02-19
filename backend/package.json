@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "type":"module",
+  "type": "module",
   "author": "",
   "license": "ISC",
   "description": "",
@@ -17,7 +17,9 @@
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-fileupload": "^1.5.2",
     "mongoose": "^9.1.6",
+    "node-cron": "^4.2.1",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
