@@ -1,4 +1,4 @@
-import Topbar from "@/components/TopBar";
+import Topbar from "@/components/Topbar";
 import { Loader } from "lucide-react";
 const HomePage= () => {
     return (
