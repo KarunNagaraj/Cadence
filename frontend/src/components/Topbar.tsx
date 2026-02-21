@@ -6,7 +6,7 @@ import SignInOauthButton from "./SignInOauthButton"
 const Topbar=()=>{
     const isAdmin = false
     return (
-        <div className="flex items-center justify-between p-4 sticky top-0 bg-red-500/75 backdrop-blur-md z-10">
+        <div className="flex items-center justify-between p-4 sticky top-0 bg-red-500/75 backdrop-blur-md z-10 rounded-md">
 
         <div className="flex gap-2 items-center">Cadence</div>
 

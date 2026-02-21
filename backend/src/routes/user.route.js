@@ -1,9 +1,9 @@
-import {Router} from 'express';
+import { Router } from "express";
 
-const router=Router();
+import { getAllUsers, getMessages } from "../controller/user.controller.js";
+const router = Router();
 
-router.get('/a',(req,res)=>{
-    res.send("chodu");
-});
+router.get("/", getAllUsers);
+
 
 export default router;
