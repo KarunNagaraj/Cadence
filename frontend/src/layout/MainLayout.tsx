@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { ResizablePanel, ResizablePanelGroup, ResizableHandle } from '@/components/ui/resizable'
 import LeftSidebar from './components/LeftSidebar';
+import FriendsActivity from './components/FriendsActivity';
 
 const MainLayout = () => {
     const isMobile = window.innerWidth <= 768; // simple check for mobile devices
@@ -26,7 +27,7 @@ const MainLayout = () => {
 
 						{/* right sidebar */}
 						<ResizablePanel defaultSize={20} minSize={0} maxSize={25} collapsedSize={0}>
-							Righ side bar
+							<FriendsActivity />
 						</ResizablePanel>
 					</>
 				)}
