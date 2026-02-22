@@ -1,3 +1,4 @@
+// adding new songs to the library
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -96,13 +97,11 @@ const AddSongDialog = () => {
 					Add Song
 				</Button>
 			</DialogTrigger>
-
 			<DialogContent className='bg-zinc-900 border-zinc-700 max-h-[80vh] overflow-auto'>
 				<DialogHeader>
 					<DialogTitle>Add New Song</DialogTitle>
 					<DialogDescription>Add a new song to your music library</DialogDescription>
 				</DialogHeader>
-
 				<div className='space-y-4 py-4'>
 					<input
 						type='file'
@@ -120,7 +119,7 @@ const AddSongDialog = () => {
 						onChange={(e) => setFiles((prev) => ({ ...prev, image: e.target.files![0] }))}
 					/>
 
-					{/* image upload area */}
+					{/*  upload image area */}
 					<div
 						className='flex items-center justify-center p-6 border-2 border-dashed border-zinc-700 rounded-lg cursor-pointer'
 						onClick={() => imageInputRef.current?.click()}
@@ -155,7 +154,7 @@ const AddSongDialog = () => {
 						</div>
 					</div>
 
-					{/* other fields */}
+					{/* etc etc*/}
 					<div className='space-y-2'>
 						<label className='text-sm font-medium'>Title</label>
 						<Input

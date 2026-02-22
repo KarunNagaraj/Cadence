@@ -17,11 +17,13 @@ return  (
 	</div>
 	<AddSongDialog />
 		</div>
+
 	</CardHeader>
 	<CardContent>
 		<SongsTable />
 	</CardContent>
-		</Card>
+</Card>
+
 	);
 };
 export default SongsTabContent;
