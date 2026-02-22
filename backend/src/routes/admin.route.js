@@ -1,8 +1,12 @@
 import { Router } from "express";
+import { checkAdmin} from "../controller/admin.controller.js";
+import { protectRoute, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = Router();
+router.use(protectRoute, requireAdmin);
 
-router.post('/',(req,res)=>{
-    res.send("admin route with get method");
-});
+router.get("/check", checkAdmin);
+
+
+
 export default router;
