@@ -1,27 +1,8 @@
 import { Router } from "express";
-import { User } from "../models/user.model.js";    
+import { authCallback } from "../controller/auth.controller.js";
 
 const router = Router();
 
+router.post("/callback", authCallback);
 
-router.post('/callback', async (req,res)=>{
-    try{
-    const {id, firstName, lastName, imageUrl} = req.body;
-    const user = await User.findOne({clerkId:id})
-    if(!user) {
-        //signup
-        await User.create({
-            fullName:`${firstName} ${lastName}`,
-            ImageUrl:imageUrl,
-            clerkId:id
-        })
-    }
-    res.status(200).json({message:"success"})
-    }
-    catch( error) {
-        console.log("error in auth callback",error);
-        res.status(500).json({message:"Internal server error"})
-    }
-
-});
 export default router;

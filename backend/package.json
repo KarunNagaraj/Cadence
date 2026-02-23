@@ -6,7 +6,7 @@
     "dev": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed:songs": "node src/seeds/songs.js",
-		"seed:albums": "node src/seeds/albums.js"
+    "seed:albums": "node src/seeds/albums.js"
   },
   "keywords": [],
   "type": "module",
