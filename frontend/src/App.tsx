@@ -6,6 +6,7 @@ import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
 import MainLayout from './layout/MainLayout'
 import ChatPage from './pages/chat/ChatPage'
 import AlbumPage from './pages/album/AlbumPage'
+import AdminPage from './pages/admin/Admin'
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           and if the user is existing it will directly log in and redirect to home page,
           So /sso-callback is not a UI page for your app; it is a technical callback handler page for Clerk auth completion.*/}
           <Route path="/auth-callback" element={<AuthCallbackPage />} />
+          <Route path='/admin' element={<AdminPage />} />
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/chat" element={<ChatPage />} />

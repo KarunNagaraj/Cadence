@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { axiosInstance } from "@/src/lib/axios";
+import { axiosInstance } from "@/lib/axios";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { Plus, Upload } from "lucide-react";
 import { useRef, useState } from "react";

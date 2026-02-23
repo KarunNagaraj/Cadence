@@ -4,7 +4,7 @@ import DashboardStats from "./components/DashboardStats";
 import { Album, Music } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SongsTabContent from "./components/SongTabContent";
-import AlbumsTabContent from "./components/AlbumsTabContent";
+import AlbumsTabContent from "./components/AlbumsTabContent.tsx";
 import { useEffect } from "react";
 import { useMusicStore } from "@/stores/useMusicStore";
 
