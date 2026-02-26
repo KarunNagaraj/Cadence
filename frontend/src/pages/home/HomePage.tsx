@@ -2,22 +2,37 @@ import Topbar from "@/components/Topbar";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { useEffect } from "react";
 import FeaturedSection from "./components/FeaturedSection";
-import SectionGrid from "./components/SectionGrid.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-
+import SectionGrid from "./components/SectionGrid";
+import { usePlayerStore } from "@/stores/usePlayerStore";
 
 const HomePage = () => {
-  const { featuredSongs, madeForYouSongs, trendingSongs, fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs, isLoading, error } = useMusicStore();
-  
-  useEffect(() => {
-    fetchFeaturedSongs();
-    fetchMadeForYouSongs();
-    fetchTrendingSongs();
-  }, [fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs]);
+	const {
+		fetchFeaturedSongs,
+		fetchMadeForYouSongs,
+		fetchTrendingSongs,
+		isLoading,
+		madeForYouSongs,
+		featuredSongs,
+		trendingSongs,
+	} = useMusicStore();
 
+	const { initializeQueue } = usePlayerStore();
 
-  return (
+	useEffect(() => {
+		fetchFeaturedSongs();
+		fetchMadeForYouSongs();
+		fetchTrendingSongs();
+	}, [fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs]);
+
+	useEffect(() => {
+		if (madeForYouSongs.length > 0 && featuredSongs.length > 0 && trendingSongs.length > 0) {
+			const allSongs = [...featuredSongs, ...madeForYouSongs, ...trendingSongs];
+			initializeQueue(allSongs);
+		}
+	}, [initializeQueue, madeForYouSongs, trendingSongs, featuredSongs]);
+
+	return (
 		<main className='rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900'>
 			<Topbar />
 			<ScrollArea className='h-[calc(100vh-180px)]'>
@@ -34,5 +49,4 @@ const HomePage = () => {
 		</main>
 	);
 };
-
 export default HomePage;
