@@ -63,6 +63,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
 			socket.on("users_online", (users: string[]) => {
 				set({ onlineUsers: new Set(users) });
+
+				const hasUnknownOnlineUser = users.some(
+					(onlineUserId) => !get().users.some((existingUser) => existingUser.clerkId === onlineUserId)
+				);
+				if (hasUnknownOnlineUser) {
+					void get().fetchUsers();
+				}
 			});
 
 			socket.on("activities", (activities: [string, string][]) => {
@@ -73,6 +80,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 				set((state) => ({
 					onlineUsers: new Set([...state.onlineUsers, userId]),
 				}));
+
+				const isUnknownUser = !get().users.some((existingUser) => existingUser.clerkId === userId);
+				if (isUnknownUser) {
+					void get().fetchUsers();
+				}
 			});
 
 			socket.on("user_disconnected", (userId: string) => {

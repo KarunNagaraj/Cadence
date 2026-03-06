@@ -14,6 +14,7 @@ export const initializeSocket = (server) => {
 
 	io.on("connection", (socket) => {
 		socket.on("user_connected", (userId) => {
+			socket.data.userId = userId;
 			userSockets.set(userId, socket.id);
 			userActivities.set(userId, "Idle");
 
@@ -26,7 +27,7 @@ export const initializeSocket = (server) => {
 		});
 
 		socket.on("update_activity", ({ userId, activity }) => {
-			console.log("activity updated", userId, activity);
+			
 			userActivities.set(userId, activity);
 			io.emit("activity_updated", { userId, activity });
 		});
@@ -34,11 +35,27 @@ export const initializeSocket = (server) => {
 		socket.on("send_message", async (data) => {
 			try {
 				const { senderId, receiverId, content } = data;
+				const authenticatedUserId = socket.data.userId;
+
+				if (!senderId || !receiverId || !content?.trim()) {
+					socket.emit("message_error", "Invalid message payload");
+					return;
+				}
+
+				if (authenticatedUserId && senderId !== authenticatedUserId) {
+					socket.emit("message_error", "Unauthorized sender");
+					return;
+				}
+
+				if (senderId === receiverId) {
+					socket.emit("message_error", "You cannot message yourself");
+					return;
+				}
 
 				const message = await Message.create({
 					senderId,
 					receiverId,
-					content,
+					content: content.trim(),
 				});
 
 				// send to receiver in realtime, if they're online

@@ -1,5 +1,7 @@
 
 import { usePlayerStore } from "@/stores/usePlayerStore";
+import { useChatStore } from "@/stores/useChatStore";
+import { useUser } from "@clerk/clerk-react";
 import { useEffect, useRef } from "react";
 
 const AudioPlayer = () => {
@@ -7,6 +9,8 @@ const AudioPlayer = () => {
 	const prevSongRef = useRef<string | null>(null);
 
 	const { currentSong, isPlaying, playNext } = usePlayerStore();
+	const { socket, isConnected } = useChatStore();
+	const { user } = useUser();
 
 	// handle play/pause logic
 	useEffect(() => {
@@ -45,6 +49,18 @@ const AudioPlayer = () => {
 			if (isPlaying) audio.play();
 		}
 	}, [currentSong, isPlaying]);
+
+	// broadcast current listening activity to friends
+	useEffect(() => {
+		if (!user?.id || !isConnected || !socket) return;
+
+		const activity =
+			isPlaying && currentSong
+				? `Playing ${currentSong.title} by ${currentSong.artist}`
+				: "Idle";
+
+		socket.emit("update_activity", { userId: user.id, activity });
+	}, [user?.id, isConnected, socket, isPlaying, currentSong]);
 
 	return <audio ref={audioRef} />;
 };
