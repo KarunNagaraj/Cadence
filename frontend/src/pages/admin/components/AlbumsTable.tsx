@@ -12,7 +12,8 @@ const AlbumsTable = () => {
 	}, [fetchAlbums]);
 
 	return (
-		<Table>
+		<div className='w-full overflow-x-auto'>
+			<Table className='min-w-[720px]'>
 			<TableHeader>
 				<TableRow className='hover:bg-zinc-800/50'>
 					<TableHead className='w-[50px]'></TableHead>
@@ -58,7 +59,8 @@ const AlbumsTable = () => {
 					</TableRow>
 				))}
 			</TableBody>
-		</Table>
+			</Table>
+		</div>
 	);
 };
 export default AlbumsTable;

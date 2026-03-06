@@ -88,7 +88,7 @@ function applyThemeToDocument(theme: GradientTheme) {
   root.style.setProperty("--ring", theme.accent);
   root.setAttribute("data-gradient-theme", theme.id);
 }
-
+// expects childeren compoenet as it this function now works as a React Component
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeTheme, setActiveTheme] = useState<GradientTheme>(() => getInitialTheme());
 

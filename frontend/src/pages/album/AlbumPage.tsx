@@ -58,16 +58,18 @@ const AlbumPage = () => {
 
 					{/* Content */}
 					<div className='relative z-10'>
-						<div className='flex p-6 gap-6 pb-8'>
+						<div className='flex flex-col md:flex-row items-start md:items-end p-4 sm:p-6 gap-4 sm:gap-6 pb-6 sm:pb-8'>
 							<img
 								src={currentAlbum?.imageUrl}
 								alt={currentAlbum?.title}
-								className='w-[240px] h-[240px] shadow-xl rounded'
+								className='w-40 h-40 sm:w-48 sm:h-48 md:w-[240px] md:h-[240px] shadow-xl rounded'
 							/>
-							<div className='flex flex-col justify-end'>
-								<p className='text-sm font-medium'>Album</p>
-								<h1 className='text-7xl font-bold my-4'>{currentAlbum?.title}</h1>
-								<div className='flex items-center gap-2 text-sm text-zinc-100'>
+							<div className='flex flex-col justify-end mt-4 md:mt-0 text-center md:text-left'>
+								<p className='text-xs sm:text-sm font-medium uppercase tracking-wide'>Album</p>
+								<h1 className='text-3xl sm:text-5xl md:text-7xl font-bold my-3 sm:my-4 break-words'>
+									{currentAlbum?.title}
+								</h1>
+								<div className='flex flex-wrap items-center justify-center md:justify-start gap-x-2 gap-y-1 text-xs sm:text-sm text-zinc-100'>
 									<span className='font-medium text-white'>{currentAlbum?.artist}</span>
 									<span>• {currentAlbum?.songs.length} songs</span>
 									<span>• {currentAlbum?.releaseYear}</span>
@@ -91,58 +93,55 @@ const AlbumPage = () => {
 						</div>
 
 						{/* Table Section */}
-						<div className='bg-black/20 backdrop-blur-sm'>
-							{/* table header */}
-							<div
-								className='grid grid-cols-[16px_4fr_2fr_1fr] gap-4 px-10 py-2 text-sm 
-            text-zinc-400 border-b border-white/5'
-							>
-								<div>#</div>
-								<div>Title</div>
-								<div>Released Date</div>
-								<div>
-									<Clock className='h-4 w-4' />
-								</div>
-							</div>
+						<div className='bg-black/20 backdrop-blur-sm mt-2 sm:mt-4'>
+							<div className='w-full overflow-x-auto'>
+								<div className='min-w-[600px]'>
+									{/* table header */}
+									<div
+										className='grid grid-cols-[16px_4fr_2fr_1fr] gap-4 px-4 sm:px-10 py-2 text-xs sm:text-sm text-zinc-400 border-b border-white/5'
+									>
+										<div>#</div>
+										<div>Title</div>
+										<div>Released Date</div>
+										<div>
+											<Clock className='h-4 w-4' />
+										</div>
+									</div>
 
-							{/* songs list */}
+									{/* songs list */}
+									<div className='px-2 sm:px-6'>
+										<div className='space-y-2 py-4'>
+											{currentAlbum?.songs.map((song, index) => {
+												const isCurrentSong = currentSong?._id === song._id;
+												return (
+													<div
+														key={song._id}
+														onClick={() => handlePlaySong(index)}
+														className={`grid grid-cols-[16px_4fr_2fr_1fr] gap-4 px-2 sm:px-4 py-2 text-xs sm:text-sm text-zinc-400 hover:bg-white/5 rounded-md group cursor-pointer`}
+													>
+														<div className='flex items-center justify-center'>
+															{isCurrentSong && isPlaying ? (
+																<div className='size-4 text-green-500'>♫</div>
+															) : (
+																<span className='group-hover:hidden'>{index + 1}</span>
+															)}
+															{!isCurrentSong && <Play className='h-4 w-4 hidden group-hover:block' />}
+														</div>
 
-							<div className='px-6'>
-								<div className='space-y-2 py-4'>
-									{currentAlbum?.songs.map((song, index) => {
-										const isCurrentSong = currentSong?._id === song._id;
-										return (
-											<div
-												key={song._id}
-												onClick={() => handlePlaySong(index)}
-												className={`grid grid-cols-[16px_4fr_2fr_1fr] gap-4 px-4 py-2 text-sm 
-                      text-zinc-400 hover:bg-white/5 rounded-md group cursor-pointer
-                      `}
-											>
-												<div className='flex items-center justify-center'>
-													{isCurrentSong && isPlaying ? (
-														<div className='size-4 text-green-500'>♫</div>
-													) : (
-														<span className='group-hover:hidden'>{index + 1}</span>
-													)}
-													{!isCurrentSong && (
-														<Play className='h-4 w-4 hidden group-hover:block' />
-													)}
-												</div>
-
-												<div className='flex items-center gap-3'>
-													<img src={song.imageUrl} alt={song.title} className='size-10' />
-
-													<div>
-														<div className={`font-medium text-white`}>{song.title}</div>
-														<div>{song.artist}</div>
+														<div className='flex items-center gap-3'>
+															<img src={song.imageUrl} alt={song.title} className='size-10' />
+															<div>
+																<div className='font-medium text-white'>{song.title}</div>
+																<div>{song.artist}</div>
+															</div>
+														</div>
+														<div className='flex items-center'>{song.createdAt.split("T")[0]}</div>
+														<div className='flex items-center'>{formatDuration(song.duration)}</div>
 													</div>
-												</div>
-												<div className='flex items-center'>{song.createdAt.split("T")[0]}</div>
-												<div className='flex items-center'>{formatDuration(song.duration)}</div>
-											</div>
-										);
-									})}
+												);
+											})}
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>

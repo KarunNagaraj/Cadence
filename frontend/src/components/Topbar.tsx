@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SignedOut, UserButton } from "@clerk/clerk-react";
-import { LayoutDashboardIcon, Menu } from "lucide-react";
+import { LayoutDashboardIcon, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import SignInOauthButton from "./SignInOauthButton";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -63,15 +63,40 @@ const Topbar = () => {
             </div>
 
             {mobileSidebarOpen && (
-                <div className="fixed inset-0 z-30 flex md:hidden">
+                <div className="fixed inset-0 z-30 md:hidden">
                     <button
                         type="button"
-                        className="flex-1 bg-black/60"
+                        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
                         onClick={() => setMobileSidebarOpen(false)}
                         aria-label="Close navigation menu"
                     />
-                    <div className="w-[80%] max-w-xs h-full glass-panel rounded-l-xl overflow-hidden">
-                        <LeftSidebar />
+
+                    <div className="relative h-full px-3 py-4 flex justify-start">
+                        <div className="glass-panel rounded-2xl w-full max-w-sm h-full flex flex-col overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-white/15">
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="/cadence-high-resolution-logo-transparent.png"
+                                        alt="Cadence Logo"
+                                        className="h-7 w-auto object-contain"
+                                    />
+                                    <span className="text-sm font-semibold tracking-wide">Library</span>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/40 border border-white/20 hover:bg-black/60 transition-colors"
+                                    onClick={() => setMobileSidebarOpen(false)}
+                                    aria-label="Close navigation menu"
+                                >
+                                    <X className="size-4" />
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-3">
+                                <LeftSidebar />
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

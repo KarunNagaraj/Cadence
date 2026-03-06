@@ -22,8 +22,10 @@ const SongsTable = () => {
 		);
 	}
 
+
 return (
-<Table>
+<div className='w-full overflow-x-auto'>
+<Table className='min-w-[640px]'>
 	<TableHeader>
 		<TableRow className='hover:bg-zinc-800/50'>
 			<TableHead className='w-[50px]'></TableHead>
@@ -61,8 +63,9 @@ return (
 			</TableCell>
 			</TableRow>
 		))}
-	</TableBody>
-</Table>
+		</TableBody>
+	</Table>
+	</div>
 	);
 };
 export default SongsTable;
