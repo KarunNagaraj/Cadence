@@ -41,14 +41,18 @@ const AlbumPage = () => {
 	};
 
 	return (
-		<div className='h-full'>
+		<div className='h-full glass-panel rounded-xl'>
 			<ScrollArea className='h-full rounded-md'>
 				{/* Main Content */}
 				<div className='relative min-h-full'>
-					{/* bg gradient */}
+					{/* bg gradient, driven by active theme */}
 					<div
-						className='absolute inset-0 bg-gradient-to-b from-[#5038a0]/80 via-zinc-900/80
-					 to-zinc-900 pointer-events-none'
+						className='absolute inset-0 pointer-events-none'
+						style={{
+							backgroundImage: 'var(--app-bg-gradient)',
+							backgroundSize: 'cover',
+							backgroundPosition: 'center',
+						}}
 						aria-hidden='true'
 					/>
 
@@ -76,8 +80,7 @@ const AlbumPage = () => {
 							<Button
 								onClick={handlePlayAlbum}
 								size='icon'
-								className='w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 
-                hover:scale-105 transition-all'
+								className='w-14 h-14 rounded-full accent-bg accent-glow hover:scale-105 transition-all'
 							>
 								{isPlaying && currentAlbum?.songs.some((song) => song._id === currentSong?._id) ? (
 									<Pause className='h-7 w-7 text-black' />

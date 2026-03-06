@@ -20,7 +20,7 @@ const MainLayout = () => {
 	}, []);
 
 	return (
-		<div className='h-screen bg-black text-white flex flex-col'>
+		<div className='h-screen text-white flex flex-col app-gradient-bg'>
 			<ResizablePanelGroup direction='horizontal' className='flex-1 flex h-full overflow-hidden p-2'>
 				<AudioPlayer />
 				{/* left sidebar */}

@@ -1,4 +1,4 @@
-import {Routes, Route} from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/home/HomePage'
 import AuthCallbackPage from './pages/auth-callback/AuthCallbackPage'
 import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
@@ -8,11 +8,12 @@ import AlbumPage from './pages/album/AlbumPage'
 import AdminPage from './pages/admin/Admin'
 import { Toaster } from 'react-hot-toast'
 import NotFoundPage from './pages/404/NotFoundPage'
+import { ThemeProvider } from './layout/ThemeToggle'
 
 
 function App() {
   return (
-      <>
+      <ThemeProvider>
         <Toaster position='top-right' />
         <Routes>
           
@@ -29,7 +30,7 @@ function App() {
             <Route path='*' element={<NotFoundPage />} />
           </Route>
         </Routes>
-      </>
+      </ThemeProvider>
   )
   
 }

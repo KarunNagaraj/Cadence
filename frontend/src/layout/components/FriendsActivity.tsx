@@ -14,8 +14,8 @@ const FriendsActivity = () => {
 	}, [fetchUsers, user]);
 
 	return (
-		<div className='h-full bg-zinc-900 rounded-lg flex flex-col'>
-			<div className='p-4 flex justify-between items-center border-b border-zinc-800'>
+		<div className='h-full glass-panel rounded-lg flex flex-col'>
+			<div className='p-4 flex justify-between items-center border-b border-white/15'>
 				<div className='flex items-center gap-2'>
 					<Users className='size-5 shrink-0' />
 					<h2 className='font-semibold'>What they're listening to</h2>
@@ -33,17 +33,17 @@ const FriendsActivity = () => {
 						return (
 							<div
 								key={user._id}
-								className='cursor-pointer hover:bg-zinc-800/50 p-3 rounded-md transition-colors group'
+								className='cursor-pointer hover:bg-white/10 p-3 rounded-md transition-colors group'
 							>
 								<div className='flex items-start gap-3'>
 									<div className='relative'>
-										<Avatar className='size-10 border border-zinc-800'>
+										<Avatar className='size-10 border border-white/15'>
 											<AvatarImage src={user.imageUrl} alt={user.fullName} />
 											<AvatarFallback>{user.fullName[0]}</AvatarFallback>
 										</Avatar>
 										<div
 											className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-zinc-900 
-												${onlineUsers.has(user.clerkId) ? "bg-green-500" : "bg-zinc-500"}
+												${onlineUsers.has(user.clerkId) ? "accent-bg" : "bg-zinc-500"}
 												`}
 											aria-hidden='true'
 										/>
@@ -83,11 +83,10 @@ const LoginPrompt = () => (
 	<div className='h-full flex flex-col items-center justify-center p-6 text-center space-y-4'>
 		<div className='relative'>
 			<div
-				className='absolute -inset-1 bg-gradient-to-r from-emerald-500 to-sky-500 rounded-full blur-lg
-       opacity-75 animate-pulse'
+					className='absolute -inset-1 bg-gradient-to-r from-emerald-500 to-sky-500 rounded-full blur-lg opacity-75 animate-pulse'
 				aria-hidden='true'
 			/>
-			<div className='relative bg-zinc-900 rounded-full p-4'>
+				<div className='relative glass-panel rounded-full p-4 border border-white/15'>
 				<HeadphonesIcon className='size-8 text-emerald-400' />
 			</div>
 		</div>
