@@ -1,4 +1,4 @@
-import { SignedOut, SignOutButton, SignedIn, UserButton } from "@clerk/clerk-react"
+import { SignedOut, UserButton } from "@clerk/clerk-react"
 import { LayoutDashboardIcon } from "lucide-react"
 import { Link } from "react-router-dom"
 import SignInOauthButton from "./SignInOauthButton"
