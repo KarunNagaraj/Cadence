@@ -85,12 +85,13 @@ const AddSongDialog = () => {
 			setSongDialogOpen(false);
 			toast.success("Song added successfully");
 			await Promise.allSettled([fetchSongs(), fetchStats(), fetchAlbums()]);
-		} catch (error: any) {
-			toast.error("Failed to add song: " + error.message);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+			} catch (error: any) {
+				const message = error?.response?.data?.message || error.message || "Unknown error";
+				toast.error("Failed to add song: " + message);
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
 	return (
 		<Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
