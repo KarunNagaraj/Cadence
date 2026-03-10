@@ -128,34 +128,45 @@ export const useMusicStore = create<MusicStore>((set) => ({
 	fetchFeaturedSongs: async () => {
 		set({ isLoading: true, error: null });
 		try {
-			const response = await axiosInstance.get("/songs/featured");
-			set({ featuredSongs: response.data });
+			const response = await axiosInstance.get("/external/new-releases", {
+				params: { lang: "English", limit: 6 },
+			});
+			set({ featuredSongs: response.data, error: null });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			set({
+				featuredSongs: [],
+				error: error.response?.data?.message ?? error.message,
+			});
 		} finally {
 			set({ isLoading: false });
 		}
 	},
 
 	fetchMadeForYouSongs: async () => {
-		set({ isLoading: true, error: null });
+		set({ isLoading: true });
 		try {
-			const response = await axiosInstance.get("/songs/made-for-you");
+			const response = await axiosInstance.get("/external/search", {
+				params: { query: "Top songs", limit: 4 },
+			});
 			set({ madeForYouSongs: response.data });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			console.log("Error in fetchMadeForYouSongs", error);
+			set({ madeForYouSongs: [] });
 		} finally {
 			set({ isLoading: false });
 		}
 	},
 
 	fetchTrendingSongs: async () => {
-		set({ isLoading: true, error: null });
+		set({ isLoading: true });
 		try {
-			const response = await axiosInstance.get("/songs/trending");
-			set({ trendingSongs: response.data });
+			const response = await axiosInstance.get("/external/trending", {
+				params: { lang: "English" },
+			});
+			set({ trendingSongs: response.data.slice(0, 4) });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			console.log("Error in fetchTrendingSongs", error);
+			set({ trendingSongs: [] });
 		} finally {
 			set({ isLoading: false });
 		}

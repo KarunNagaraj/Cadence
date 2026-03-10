@@ -1,10 +1,11 @@
 import Topbar from "@/components/Topbar";
 import { useMusicStore } from "@/stores/useMusicStore";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import FeaturedSection from "./components/FeaturedSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SectionGrid from "./components/SectionGrid";
 import { usePlayerStore } from "@/stores/usePlayerStore";
+import SongSearch from "./components/SongSearch";
 
 const HomePage = () => {
 	const {
@@ -19,6 +20,16 @@ const HomePage = () => {
 
 	const { initializeQueue } = usePlayerStore();
 
+	const allSongs = useMemo(() => {
+		const uniqueSongs = new Map<string, (typeof featuredSongs)[number]>();
+
+		[...featuredSongs, ...madeForYouSongs, ...trendingSongs].forEach((song) => {
+			uniqueSongs.set(song._id, song);
+		});
+
+		return Array.from(uniqueSongs.values());
+	}, [featuredSongs, madeForYouSongs, trendingSongs]);
+
 	useEffect(() => {
 		fetchFeaturedSongs();
 		fetchMadeForYouSongs();
@@ -26,11 +37,8 @@ const HomePage = () => {
 	}, [fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs]);
 
 	useEffect(() => {
-		if (madeForYouSongs.length > 0 && featuredSongs.length > 0 && trendingSongs.length > 0) {
-			const allSongs = [...featuredSongs, ...madeForYouSongs, ...trendingSongs];
-			initializeQueue(allSongs);
-		}
-	}, [initializeQueue, madeForYouSongs, trendingSongs, featuredSongs]);
+		if (allSongs.length > 0) initializeQueue(allSongs);
+	}, [initializeQueue, allSongs]);
 
 	return (
 		<main className='rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900'>
@@ -38,6 +46,7 @@ const HomePage = () => {
 			<ScrollArea className='h-[calc(100vh-180px)]'>
 				<div className='p-4 sm:p-6'>
 					<h1 className='text-2xl sm:text-3xl font-bold mb-6'>Good afternoon</h1>
+					<SongSearch songs={allSongs} />
 					<FeaturedSection />
 
 					<div className='space-y-8'>
