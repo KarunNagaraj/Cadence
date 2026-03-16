@@ -159,11 +159,13 @@ export const useMusicStore = create<MusicStore>((set) => ({
 
 	fetchTrendingSongs: async () => {
 		set({ isLoading: true });
+
 		try {
-			const response = await axiosInstance.get("/external/trending", {
-				params: { lang: "English" },
+			const response = await axiosInstance.get("/external/random", {
+				params: { lang: "English", limit: 20 },
 			});
-			set({ trendingSongs: response.data.slice(0, 4) });
+
+			set({ trendingSongs: response.data });
 		} catch (error: any) {
 			console.log("Error in fetchTrendingSongs", error);
 			set({ trendingSongs: [] });

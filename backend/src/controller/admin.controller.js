@@ -22,8 +22,13 @@ export const createSong = async (req, res, next) => {
 		}
 
 		const { title, artist, albumId, duration } = req.body;
+		const parsedDuration = Number(duration);
 		const audioFile = req.files.audioFile;
 		const imageFile = req.files.imageFile;
+
+		if (!Number.isFinite(parsedDuration) || parsedDuration < 0) {
+			return res.status(400).json({ message: "Invalid song duration" });
+		}
 
 		const audioUrl = await uploadToCloudinary(audioFile);
 		const imageUrl = await uploadToCloudinary(imageFile);
@@ -33,7 +38,7 @@ export const createSong = async (req, res, next) => {
 			artist,
 			audioUrl,
 			imageUrl,
-			duration,
+			duration: parsedDuration,
 			albumId: albumId || null,
 		});
 

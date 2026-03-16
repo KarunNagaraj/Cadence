@@ -21,8 +21,38 @@ interface NewSong {
 	title: string;
 	artist: string;
 	album: string;
-	duration: string;
 }
+
+const getAudioDuration = (file: File) =>
+	new Promise<number>((resolve, reject) => {
+		const audio = document.createElement("audio");
+		const objectUrl = URL.createObjectURL(file);
+
+		const cleanup = () => {
+			URL.revokeObjectURL(objectUrl);
+			audio.src = "";
+		};
+
+		audio.preload = "metadata";
+		audio.onloadedmetadata = () => {
+			const duration = Math.round(audio.duration);
+			cleanup();
+
+			if (!Number.isFinite(duration) || duration < 0) {
+				reject(new Error("Unable to determine audio duration"));
+				return;
+			}
+
+			resolve(duration);
+		};
+
+		audio.onerror = () => {
+			cleanup();
+			reject(new Error("Unable to read audio metadata"));
+		};
+
+		audio.src = objectUrl;
+	});
 
 const AddSongDialog = () => {
 	const { albums, fetchSongs, fetchStats, fetchAlbums } = useMusicStore();
@@ -33,7 +63,6 @@ const AddSongDialog = () => {
 		title: "",
 		artist: "",
 		album: "",
-		duration: "0",
 	});
 
 	const [files, setFiles] = useState<{ audio: File | null; image: File | null }>({
@@ -53,10 +82,11 @@ const AddSongDialog = () => {
 			}
 
 			const formData = new FormData();
+			const duration = await getAudioDuration(files.audio);
 
 			formData.append("title", newSong.title);
 			formData.append("artist", newSong.artist);
-			formData.append("duration", newSong.duration);
+			formData.append("duration", duration.toString());
 			if (newSong.album && newSong.album !== "none") {
 				formData.append("albumId", newSong.album);
 			}
@@ -74,7 +104,6 @@ const AddSongDialog = () => {
 				title: "",
 				artist: "",
 				album: "",
-				duration: "0",
 			});
 
 			setFiles({
@@ -156,6 +185,7 @@ const AddSongDialog = () => {
 								{files.audio ? files.audio.name.slice(0, 20) : "Choose Audio File"}
 							</Button>
 						</div>
+						<p className='text-xs text-zinc-500'>Duration is detected automatically from the uploaded audio.</p>
 					</div>
 
 					{/* etc etc*/}
@@ -173,17 +203,6 @@ const AddSongDialog = () => {
 						<Input
 							value={newSong.artist}
 							onChange={(e) => setNewSong({ ...newSong, artist: e.target.value })}
-							className='bg-zinc-800 border-zinc-700'
-						/>
-					</div>
-
-					<div className='space-y-2'>
-						<label className='text-sm font-medium'>Duration (seconds)</label>
-						<Input
-							type='number'
-							min='0'
-							value={newSong.duration}
-							onChange={(e) => setNewSong({ ...newSong, duration: e.target.value || "0" })}
 							className='bg-zinc-800 border-zinc-700'
 						/>
 					</div>

@@ -1,36 +1,62 @@
+import { axiosInstance } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import type { Song } from "@/types";
 import { Pause, Play, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 
-type SongSearchProps = {
-	songs: Song[];
-};
-
-const SongSearch = ({ songs }: SongSearchProps) => {
+const SongSearch = () => {
 	const [query, setQuery] = useState("");
-	const { currentSong, isPlaying, setCurrentSong, togglePlay } = usePlayerStore();
+	const [results, setResults] = useState<Song[]>([]);
+	const [isSearching, setIsSearching] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const deferredQuery = useDeferredValue(query);
+	const normalizedQuery = deferredQuery.trim();
+	const { currentSong, isPlaying, playAlbum, togglePlay } = usePlayerStore();
 
-	const normalizedQuery = query.trim().toLowerCase();
+	useEffect(() => {
+		if (!normalizedQuery) {
+			setResults([]);
+			setError(null);
+			setIsSearching(false);
+			return;
+		}
 
-	const filteredSongs = useMemo(() => {
-		if (!normalizedQuery) return [];
+		const controller = new AbortController();
+		const timeoutId = window.setTimeout(async () => {
+			setIsSearching(true);
+			setError(null);
 
-		return songs.filter((song) => {
-			const searchableText = `${song.title} ${song.artist}`.toLowerCase();
-			return searchableText.includes(normalizedQuery);
-		});
-	}, [normalizedQuery, songs]);
+			try {
+				const response = await axiosInstance.get("/external/search", {
+					params: { query: normalizedQuery, limit: 20 },
+					signal: controller.signal,
+				});
 
-	const handlePlay = (song: Song) => {
+				setResults(response.data);
+			} catch (searchError: any) {
+				if (searchError?.code === "ERR_CANCELED") return;
+				setResults([]);
+				setError(searchError.response?.data?.message ?? searchError.message ?? "Search failed");
+			} finally {
+				if (!controller.signal.aborted) setIsSearching(false);
+			}
+		}, 250);
+
+		return () => {
+			controller.abort();
+			window.clearTimeout(timeoutId);
+		};
+	}, [normalizedQuery]);
+
+	const handlePlay = (song: Song, songIndex: number) => {
 		if (currentSong?._id === song._id) {
 			togglePlay();
 			return;
 		}
 
-		setCurrentSong(song);
+		playAlbum(results, songIndex);
 	};
 
 	return (
@@ -42,7 +68,7 @@ const SongSearch = ({ songs }: SongSearchProps) => {
 				</div>
 				{normalizedQuery && (
 					<span className='text-xs text-zinc-400'>
-						{filteredSongs.length} result{filteredSongs.length === 1 ? "" : "s"}
+						{isSearching ? "Searching..." : `${results.length} result${results.length === 1 ? "" : "s"}`}
 					</span>
 				)}
 			</div>
@@ -71,11 +97,15 @@ const SongSearch = ({ songs }: SongSearchProps) => {
 
 			{normalizedQuery && (
 				<div className='mt-4 rounded-lg border border-zinc-700/60 bg-zinc-800/40'>
-					{filteredSongs.length === 0 ? (
+					{error ? (
+						<p className='px-4 py-6 text-center text-sm text-red-400'>{error}</p>
+					) : isSearching ? (
+						<p className='px-4 py-6 text-center text-sm text-zinc-400'>Searching songs...</p>
+					) : results.length === 0 ? (
 						<p className='px-4 py-6 text-center text-sm text-zinc-400'>No matching songs found.</p>
 					) : (
 						<ul className='max-h-72 divide-y divide-zinc-700/60 overflow-y-auto'>
-							{filteredSongs.map((song) => {
+							{results.map((song, songIndex) => {
 								const isCurrentSong = currentSong?._id === song._id;
 
 								return (
@@ -95,7 +125,7 @@ const SongSearch = ({ songs }: SongSearchProps) => {
 										<Button
 											type='button'
 											size='icon'
-											onClick={() => handlePlay(song)}
+											onClick={() => handlePlay(song, songIndex)}
 											className='bg-green-500 text-black hover:bg-green-400'
 											aria-label={
 												isCurrentSong && isPlaying ? `Pause ${song.title}` : `Play ${song.title}`

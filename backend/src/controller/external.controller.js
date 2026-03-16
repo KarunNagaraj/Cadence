@@ -6,6 +6,21 @@ import {
 	searchSongsFromGaana,
 } from "../lib/gaana.service.js";
 
+import { getRandomSongsFromGaana } from "../lib/gaana.service.js";
+
+export const getExternalRandomSongs = async (req, res, next) => {
+	try {
+		const limit = parseLimit(req.query.limit, 15);
+		const lang = String(req.query.lang ?? req.query.language ?? "English").trim() || "English";
+
+		const songs = await getRandomSongsFromGaana({ lang, limit });
+
+		return res.status(200).json(songs);
+
+	} catch (error) {
+		return handleExternalError(error, res, next);
+	}
+};
 const parseLimit = (value, defaultLimit = 20) => {
 	const parsed = Number.parseInt(value, 10);
 	if (Number.isNaN(parsed)) return defaultLimit;
@@ -34,7 +49,7 @@ export const searchExternalSongs = async (req, res, next) => {
 
 export const getExternalTrendingSongs = async (req, res, next) => {
 	try {
-		const lang = String(req.query.language ?? req.query.lang ?? "English").trim() || "English";
+		const lang = String(req.query.lang ?? req.query.language ?? "Hindi").trim() || "Hindi";
 		const songs = await getTrendingSongsFromGaana({ lang });
 		return res.status(200).json(songs);
 	} catch (error) {
@@ -44,7 +59,7 @@ export const getExternalTrendingSongs = async (req, res, next) => {
 
 export const getExternalNewReleases = async (req, res, next) => {
 	try {
-		const lang = String(req.query.lang ?? req.query.language ?? "English").trim() || "English";
+		const lang = String(req.query.lang ?? req.query.language ?? "Hindi").trim() || "Hindi";
 		const limit = parseLimit(req.query.limit, 6);
 		const songs = await getNewReleaseSongsFromGaana({ lang });
 		if (songs.length > 0) return res.status(200).json(songs.slice(0, limit));

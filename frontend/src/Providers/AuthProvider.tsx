@@ -1,6 +1,7 @@
 import { setAuthTokenGetter } from "@/lib/axios";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useChatStore } from "@/stores/useChatStore";
+import { usePlaylistStore } from "@/stores/usePlaylistStore";
 import { useAuth } from "@clerk/clerk-react";
 import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -8,8 +9,9 @@ import { useEffect, useState } from "react";
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const { getToken, userId } = useAuth();
 	const [loading, setLoading] = useState(true);
-	const { checkAdminStatus } = useAuthStore();
+	const { checkAdminStatus, reset: resetAuth } = useAuthStore();
 	const { initSocket, disconnectSocket } = useChatStore();
+	const { fetchPlaylists, migrateLegacyPlaylists, reset: resetPlaylists } = usePlaylistStore();
 
 	useEffect(() => {
 		setAuthTokenGetter(() => getToken());
@@ -17,10 +19,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		const initAuth = async () => {
 			try {
 				const token = await getToken();
-				if (token) {
+				if (token && userId) {
 					await checkAdminStatus();
-					// init socket
-					if (userId) initSocket(userId);
+					await fetchPlaylists();
+					await migrateLegacyPlaylists();
+					initSocket(userId);
+				} else {
+					resetAuth();
+					resetPlaylists();
 				}
 			} catch (error: any) {
 				console.log("Error in auth provider", error);
@@ -35,8 +41,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		return () => {
 			setAuthTokenGetter(null);
 			disconnectSocket();
+			resetPlaylists();
 		};
-	}, [getToken, userId, checkAdminStatus, initSocket, disconnectSocket]);
+	}, [getToken, userId, checkAdminStatus, resetAuth, fetchPlaylists, migrateLegacyPlaylists, initSocket, disconnectSocket, resetPlaylists]);
 
 	if (loading)
 		return (
