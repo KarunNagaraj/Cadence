@@ -28,7 +28,13 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem
+    --radius: 0.5rem;
+
+    /* App gradient theming */
+    --app-bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 35%, #1d4ed8 100%);
+    /* HSL triple used with hsl(var(--primary)) */
+    --primary: 222 84% 56%;
+    --ring: 222 84% 56%;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -54,7 +60,10 @@
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
+
+    /* Dark default gradient (overridden by theme provider) */
+    --app-bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 35%, #1d4ed8 100%);
   }
 }
 
@@ -66,3 +75,37 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Gradient background wrapper for the entire app */
+.app-gradient-bg {
+  background-image: var(--app-bg-gradient);
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  transition: background 0.8s ease, background-image 0.8s ease;
+}
+
+/* Glassmorphism surfaces */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+}
+
+/* Theme accent helpers (based on Tailwind primary token) */
+.accent-bg {
+  background-color: hsl(var(--primary));
+}
+
+.accent-border {
+  border-color: hsl(var(--primary));
+}
+
+.accent-text {
+  color: hsl(var(--primary));
+}
+
+.accent-glow {
+  box-shadow: 0 0 40px hsla(var(--primary) / 0.45);
+}
+

@@ -11,15 +11,17 @@ const LeftSidebar = () => {
 	const playlists = usePlaylistStore((state) => state.playlists);
 
 	return (
-		<div className='flex h-full flex-col gap-2'>
-			<div className='rounded-lg bg-zinc-900 p-4'>
+		<div className='h-full flex flex-col gap-2'>
+			{/* Navigation menu */}
+
+			<div className='rounded-lg glass-panel p-4'>
 				<div className='space-y-2'>
 					<Link
 						to='/'
 						className={cn(
 							buttonVariants({
 								variant: "ghost",
-								className: "w-full justify-start text-white hover:bg-zinc-800",
+								className: "w-full justify-start text-white hover:bg-white/10",
 							})
 						)}
 					>
@@ -33,7 +35,7 @@ const LeftSidebar = () => {
 							className={cn(
 								buttonVariants({
 									variant: "ghost",
-									className: "w-full justify-start text-white hover:bg-zinc-800",
+									className: "w-full justify-start text-white hover:bg-white/10",
 								})
 							)}
 						>
@@ -44,7 +46,8 @@ const LeftSidebar = () => {
 				</div>
 			</div>
 
-			<div className='flex-1 rounded-lg bg-zinc-900 p-4'>
+			{/* Library section */}
+			<div className='flex-1 rounded-lg glass-panel p-4'>
 				<div className='mb-4 flex items-center justify-between gap-3'>
 					<div className='flex items-center px-2 text-white'>
 						<Library className='mr-2 size-5' />
@@ -94,8 +97,8 @@ const LeftSidebar = () => {
 											key={playlist._id}
 											className={({ isActive }) =>
 												cn(
-													"group flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-zinc-800",
-													isActive && "bg-zinc-800"
+													"group flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-white/10",
+													isActive && "bg-white/10"
 												)
 											}
 										>

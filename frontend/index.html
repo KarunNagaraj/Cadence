@@ -8,6 +8,55 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("cadence-gradient-theme");
+          if (!stored) return;
+          var parsed = JSON.parse(stored);
+          if (!parsed || !parsed.id) return;
+
+          // Keep this in sync with GRADIENT_THEMES in ThemeToggle.tsx
+          var themes = {
+            aurora: {
+              bg: "linear-gradient(135deg, #020617 0%, #0f172a 35%, #4f46e5 100%)",
+              accent: "234 89% 64%",
+            },
+            sunset: {
+              bg: "linear-gradient(135deg, #0f172a 0%, #ea580c 35%, #db2777 100%)",
+              accent: "17 90% 59%",
+            },
+            forest: {
+              bg: "linear-gradient(135deg, #020617 0%, #166534 30%, #22c55e 100%)",
+              accent: "142 72% 45%",
+            },
+            ocean: {
+              bg: "linear-gradient(135deg, #020617 0%, #0ea5e9 35%, #1d4ed8 100%)",
+              accent: "199 89% 48%",
+            },
+            neon: {
+              bg: "linear-gradient(135deg, #020617 0%, #7c3aed 35%, #ec4899 100%)",
+              accent: "292 84% 61%",
+            },
+            midnight: {
+              bg: "linear-gradient(135deg, #020617 0%, #111827 30%, #22d3ee 100%)",
+              accent: "184 86% 53%",
+            },
+          };
+
+          var theme = themes[parsed.id];
+          if (!theme) return;
+
+          var root = document.documentElement;
+          root.style.setProperty("--app-bg-gradient", theme.bg);
+          root.style.setProperty("--primary", theme.accent);
+          root.style.setProperty("--ring", theme.accent);
+          root.setAttribute("data-gradient-theme", parsed.id);
+        } catch (e) {
+          // ignore
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
