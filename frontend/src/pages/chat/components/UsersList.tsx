@@ -5,7 +5,7 @@ import { useChatStore } from "@/stores/useChatStore";
 import { useNavigate } from "react-router-dom";
 
 const UsersList = () => {
-	const { users, selectedUser, isLoading, setSelectedUser, onlineUsers } = useChatStore();
+	const { users, selectedUser, isLoading, onlineUsers } = useChatStore();
 	const navigate = useNavigate();
 
 	return (
