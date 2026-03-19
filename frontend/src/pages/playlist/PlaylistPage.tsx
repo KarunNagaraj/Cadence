@@ -2,6 +2,7 @@ import { axiosInstance } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { usePlaylistStore } from "@/stores/usePlaylistStore";
 import type { Song } from "@/types";
@@ -15,6 +16,20 @@ const formatDuration = (seconds: number) => {
 	const minutes = Math.floor(seconds / 60);
 	const remainingSeconds = seconds % 60;
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};
+
+const getErrorMessage = (error: unknown, fallback: string) => {
+	if (typeof error === "object" && error !== null) {
+		const maybeError = error as {
+			response?: { data?: { message?: string } };
+			message?: string;
+			code?: string;
+		};
+
+		return maybeError.response?.data?.message ?? maybeError.message ?? fallback;
+	}
+
+	return fallback;
 };
 
 const PlaylistPage = () => {
@@ -50,7 +65,7 @@ const PlaylistPage = () => {
 	useEffect(() => {
 		if (!isSignedIn || hasLoaded || isPlaylistLoading) return;
 
-		fetchPlaylists().catch((error: any) => {
+		fetchPlaylists().catch((error: unknown) => {
 			console.log("Error fetching playlists", error);
 		});
 	}, [isSignedIn, hasLoaded, isPlaylistLoading, fetchPlaylists]);
@@ -74,10 +89,10 @@ const PlaylistPage = () => {
 					signal: controller.signal,
 				});
 				setSearchResults(response.data);
-			} catch (error: any) {
-				if (error?.code === "ERR_CANCELED") return;
+			} catch (error: unknown) {
+				if (typeof error === "object" && error !== null && "code" in error && error.code === "ERR_CANCELED") return;
 				setSearchResults([]);
-				setSearchError(error.response?.data?.message ?? error.message ?? "Failed to search songs");
+				setSearchError(getErrorMessage(error, "Failed to search songs"));
 			} finally {
 				if (!controller.signal.aborted) setIsSearching(false);
 			}
@@ -92,16 +107,16 @@ const PlaylistPage = () => {
 	if (!playlist) {
 		if (!isSignedIn) {
 			return (
-				<div className='flex h-full items-center justify-center rounded-md bg-zinc-900'>
+				<div className='flex h-full items-center justify-center rounded-xl glass-panel'>
 					<div className='max-w-md space-y-3 px-6 text-center'>
-						<div className='mx-auto flex size-14 items-center justify-center rounded-full bg-zinc-800 text-zinc-300'>
+						<div className='mx-auto flex size-14 items-center justify-center rounded-full border border-white/10 bg-black/30 text-zinc-300'>
 							<ListMusic className='size-6' />
 						</div>
 						<h1 className='text-2xl font-bold text-white'>Sign in to view playlists</h1>
 						<p className='text-sm text-zinc-400'>
 							Playlists are now saved to your account instead of only this browser session.
 						</p>
-						<Button onClick={() => navigate("/")} className='bg-white text-black hover:bg-zinc-200'>
+						<Button onClick={() => navigate("/")}>
 							Back Home
 						</Button>
 					</div>
@@ -111,7 +126,7 @@ const PlaylistPage = () => {
 
 		if (isPlaylistLoading || !hasLoaded) {
 			return (
-				<div className='flex h-full items-center justify-center rounded-md bg-zinc-900 text-zinc-300'>
+				<div className='flex h-full items-center justify-center rounded-xl glass-panel text-zinc-300'>
 					<div className='flex items-center gap-3'>
 						<Loader className='size-5 animate-spin' />
 						<span>Loading playlist...</span>
@@ -121,16 +136,16 @@ const PlaylistPage = () => {
 		}
 
 		return (
-			<div className='flex h-full items-center justify-center rounded-md bg-zinc-900'>
+			<div className='flex h-full items-center justify-center rounded-xl glass-panel'>
 				<div className='max-w-md space-y-3 px-6 text-center'>
-					<div className='mx-auto flex size-14 items-center justify-center rounded-full bg-zinc-800 text-zinc-300'>
+					<div className='mx-auto flex size-14 items-center justify-center rounded-full border border-white/10 bg-black/30 text-zinc-300'>
 						<ListMusic className='size-6' />
 					</div>
 					<h1 className='text-2xl font-bold text-white'>Playlist not found</h1>
 					<p className='text-sm text-zinc-400'>
 						This playlist may have been deleted from your account. Pick another one from the sidebar or create a new playlist.
 					</p>
-					<Button onClick={() => navigate("/")} className='bg-white text-black hover:bg-zinc-200'>
+					<Button onClick={() => navigate("/")}>
 						Back Home
 					</Button>
 				</div>
@@ -145,8 +160,8 @@ const PlaylistPage = () => {
 
 		try {
 			await renamePlaylist(playlist._id, normalizedName);
-		} catch (error: any) {
-			toast.error(error?.response?.data?.message ?? error?.message ?? "Failed to rename playlist");
+		} catch (error: unknown) {
+			toast.error(getErrorMessage(error, "Failed to rename playlist"));
 			setPlaylistName(playlist.name);
 		}
 	};
@@ -158,8 +173,8 @@ const PlaylistPage = () => {
 			await deletePlaylist(playlist._id);
 			toast.success("Playlist deleted");
 			navigate("/");
-		} catch (error: any) {
-			toast.error(error?.response?.data?.message ?? error?.message ?? "Failed to delete playlist");
+		} catch (error: unknown) {
+			toast.error(getErrorMessage(error, "Failed to delete playlist"));
 		}
 	};
 
@@ -189,25 +204,31 @@ const PlaylistPage = () => {
 			}
 
 			toast.success(`Added "${song.title}"`);
-		} catch (error: any) {
-			toast.error(error?.response?.data?.message ?? error?.message ?? "Failed to add song");
+		} catch (error: unknown) {
+			toast.error(getErrorMessage(error, "Failed to add song"));
 		}
 	};
 
 	const handleRemoveSong = async (songId: string) => {
 		try {
 			await removeSongFromPlaylist(playlist._id, songId);
-		} catch (error: any) {
-			toast.error(error?.response?.data?.message ?? error?.message ?? "Failed to remove song");
+		} catch (error: unknown) {
+			toast.error(getErrorMessage(error, "Failed to remove song"));
 		}
 	};
 
 	return (
-		<div className='h-full'>
+		<div className='h-full rounded-xl glass-panel'>
 			<ScrollArea className='h-full rounded-md'>
 				<div className='relative min-h-full'>
 					<div
-						className='pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-700/50 via-zinc-900/85 to-zinc-950'
+						className='pointer-events-none absolute inset-0'
+						style={{
+							backgroundImage:
+								"linear-gradient(180deg, rgba(4, 8, 20, 0.1) 0%, rgba(4, 8, 20, 0.72) 65%, rgba(2, 6, 23, 0.92) 100%), var(--app-bg-gradient)",
+							backgroundSize: "cover",
+							backgroundPosition: "center",
+						}}
 						aria-hidden='true'
 					/>
 
@@ -220,7 +241,7 @@ const PlaylistPage = () => {
 									className='h-[240px] w-[240px] rounded object-cover shadow-2xl'
 								/>
 							) : (
-								<div className='flex h-[240px] w-[240px] items-center justify-center rounded bg-gradient-to-br from-zinc-800 via-zinc-900 to-black shadow-2xl'>
+								<div className='flex h-[240px] w-[240px] items-center justify-center rounded border border-white/10 bg-black/25 shadow-2xl backdrop-blur-sm'>
 									<div className='text-center text-zinc-400'>
 										<ListMusic className='mx-auto mb-4 size-16' />
 										<p className='text-sm uppercase tracking-[0.3em]'>Empty Playlist</p>
@@ -253,7 +274,7 @@ const PlaylistPage = () => {
 									<Button
 										onClick={handlePlayPlaylist}
 										size='icon'
-										className='size-14 rounded-full bg-green-500 text-black hover:scale-105 hover:bg-green-400'
+										className='size-14 rounded-full accent-bg accent-glow text-primary-foreground hover:scale-105 hover:brightness-110'
 										disabled={playlist.songs.length === 0}
 									>
 										{isPlaying && playlist.songs.some((song) => song._id === currentSong?._id) ? (
@@ -263,16 +284,15 @@ const PlaylistPage = () => {
 										)}
 									</Button>
 									<Button
-										variant='outline'
 										onClick={savePlaylistName}
-										className='border-zinc-700 bg-zinc-900/80 text-white hover:bg-zinc-800'
+										className='accent-glow'
 									>
 										Save Name
 									</Button>
 									<Button
 										variant='outline'
 										onClick={handleDeletePlaylist}
-										className='border-zinc-700 bg-zinc-900/80 text-white hover:bg-zinc-800'
+										className='border-white/10 bg-black/30 text-white hover:bg-white/10'
 									>
 										<Trash2 className='mr-2 size-4' />
 										Delete Playlist
@@ -294,7 +314,7 @@ const PlaylistPage = () => {
 
 								<div className='px-3 py-4'>
 									{playlist.songs.length === 0 ? (
-										<div className='rounded-xl border border-dashed border-zinc-800 bg-zinc-950/40 p-8 text-center'>
+										<div className='rounded-xl border border-dashed border-white/10 bg-black/20 p-8 text-center'>
 											<p className='text-lg font-semibold text-white'>No songs in this playlist yet</p>
 											<p className='mt-2 text-sm text-zinc-400'>
 												Use the search panel to add songs. The first track you add becomes the playlist cover.
@@ -313,7 +333,7 @@ const PlaylistPage = () => {
 													>
 														<div className='flex items-center justify-center'>
 															{isCurrentSong && isPlaying ? (
-																<div className='text-green-500'>♫</div>
+																<div className='accent-text'>♫</div>
 															) : (
 																<span>{index + 1}</span>
 															)}
@@ -338,7 +358,7 @@ const PlaylistPage = () => {
 																	event.stopPropagation();
 																	handleRemoveSong(song._id);
 																}}
-																className='text-zinc-400 hover:bg-zinc-800 hover:text-white'
+																className='text-zinc-400 hover:bg-white/10 hover:text-white'
 																aria-label={`Remove ${song.title}`}
 															>
 																<Trash2 className='size-4' />
@@ -366,7 +386,7 @@ const PlaylistPage = () => {
 										value={searchQuery}
 										onChange={(event) => setSearchQuery(event.target.value)}
 										placeholder='Search by title or artist'
-										className='border-zinc-800 bg-zinc-900 pl-10'
+										className='border-white/10 bg-black/30 pl-10'
 									/>
 								</div>
 
@@ -385,7 +405,7 @@ const PlaylistPage = () => {
 												return (
 													<div
 														key={song._id}
-														className='flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/70 p-3'
+														className='flex items-center gap-3 rounded-xl border border-white/10 bg-black/25 p-3'
 													>
 														<img
 															src={song.imageUrl}
@@ -399,9 +419,14 @@ const PlaylistPage = () => {
 														<Button
 															type='button'
 															size='sm'
+															variant={alreadyAdded ? "outline" : "default"}
 															onClick={() => handleAddSong(song)}
 															disabled={alreadyAdded}
-															className='bg-green-500 text-black hover:bg-green-400 disabled:bg-zinc-800 disabled:text-zinc-500'
+															className={cn(
+																alreadyAdded
+																	? "border-white/10 bg-black/30 text-zinc-400 hover:bg-black/30 hover:text-zinc-400"
+																	: "accent-glow"
+															)}
 														>
 															<Plus className='mr-1 size-4' />
 															{alreadyAdded ? "Added" : "Add"}
@@ -411,7 +436,7 @@ const PlaylistPage = () => {
 											})
 										)
 									) : (
-										<div className='rounded-xl border border-dashed border-zinc-800 bg-zinc-950/40 p-5 text-sm text-zinc-400'>
+										<div className='rounded-xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-zinc-400'>
 											Start typing to search the external catalog and build this playlist.
 										</div>
 									)}

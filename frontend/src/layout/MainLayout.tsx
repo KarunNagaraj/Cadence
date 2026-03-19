@@ -4,6 +4,7 @@ import LeftSidebar from "./components/LeftSidebar";
 import FriendsActivity from "./components/FriendsActivity";
 import AudioPlayer from "./components/AudioPlayer";
 import { PlaybackControls } from "./components/PlayBackControls";
+import ChatNotification from "./components/ChatNotification";
 import { useEffect, useState } from "react";
 
 const MainLayout = () => {
@@ -21,6 +22,7 @@ const MainLayout = () => {
 
 	return (
 		<div className='h-screen text-white flex flex-col app-gradient-bg'>
+			<ChatNotification />
 			<ResizablePanelGroup direction='horizontal' className='flex-1 flex h-full overflow-hidden p-2 gap-2'>
 				<AudioPlayer />
 				{/* left sidebar: visible as panel on desktop, mobile uses Topbar overlay */}

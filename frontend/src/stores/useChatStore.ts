@@ -1,7 +1,13 @@
 import { axiosInstance } from "@/lib/axios";
-import type{ Message, User } from "@/types";
+import type { Message, User } from "@/types";
 import { create } from "zustand";
 import { io } from "socket.io-client";
+
+interface ChatNotification {
+	id: string;
+	message: string;
+	type: "success" | "error" | "info";
+}
 
 interface ChatStore {
 	users: User[];
@@ -13,6 +19,7 @@ interface ChatStore {
 	userActivities: Map<string, string>;
 	messages: Message[];
 	selectedUser: User | null;
+	chatNotification: ChatNotification | null;
 
 	fetchUsers: () => Promise<void>;
 	initSocket: (userId: string) => void;
@@ -20,6 +27,7 @@ interface ChatStore {
 	sendMessage: (receiverId: string, senderId: string, content: string) => void;
 	fetchMessages: (userId: string) => Promise<void>;
 	setSelectedUser: (user: User | null) => void;
+	clearChatNotification: () => void;
 }
 
 const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
@@ -39,8 +47,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	userActivities: new Map(),
 	messages: [],
 	selectedUser: null,
+	chatNotification: null,
 
 	setSelectedUser: (user) => set({ selectedUser: user }),
+	clearChatNotification: () => set({ chatNotification: null }),
 
 	fetchUsers: async () => {
 		set({ isLoading: true, error: null });
@@ -96,8 +106,15 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			});
 
 			socket.on("receive_message", (message: Message) => {
+				const sender = get().users.find((user) => user.clerkId === message.senderId);
+
 				set((state) => ({
 					messages: [...state.messages, message],
+					chatNotification: {
+						id: `incoming-${message._id}`,
+						message: sender ? `New message from ${sender.fullName}` : "New message received",
+						type: "info",
+					},
 				}));
 			});
 
@@ -105,6 +122,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 				set((state) => ({
 					messages: [...state.messages, message],
 				}));
+			});
+
+			socket.on("message_error", (message: string) => {
+				set({
+					chatNotification: {
+						id: `${Date.now()}`,
+						message: message || "Failed to send message",
+						type: "error",
+					},
+				});
 			});
 
 			socket.on("activity_updated", ({ userId, activity }) => {

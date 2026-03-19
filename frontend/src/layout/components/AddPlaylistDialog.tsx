@@ -19,6 +19,19 @@ type AddPlaylistDialogProps = {
 	compact?: boolean;
 };
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+	if (typeof error === "object" && error !== null) {
+		const maybeError = error as {
+			response?: { data?: { message?: string } };
+			message?: string;
+		};
+
+		return maybeError.response?.data?.message ?? maybeError.message ?? fallback;
+	}
+
+	return fallback;
+};
+
 const AddPlaylistDialog = ({ compact = false }: AddPlaylistDialogProps) => {
 	const navigate = useNavigate();
 	const createPlaylist = usePlaylistStore((state) => state.createPlaylist);
@@ -32,8 +45,8 @@ const AddPlaylistDialog = ({ compact = false }: AddPlaylistDialogProps) => {
 			setName("");
 			setIsOpen(false);
 			navigate(`/playlists/${playlist._id}`);
-		} catch (error: any) {
-			toast.error(error?.response?.data?.message ?? error?.message ?? "Failed to create playlist");
+		} catch (error: unknown) {
+			toast.error(getErrorMessage(error, "Failed to create playlist"));
 		}
 	};
 
@@ -50,14 +63,14 @@ const AddPlaylistDialog = ({ compact = false }: AddPlaylistDialogProps) => {
 					<Button
 						variant='ghost'
 						size='icon'
-						className='text-zinc-400 hover:bg-zinc-800 hover:text-white'
+						className='accent-text hover:bg-white/10 hover:text-white'
 						aria-label='Create playlist'
 						disabled={isSaving}
 					>
 						<Plus className='size-4' />
 					</Button>
 				) : (
-					<Button className='w-full bg-white text-black hover:bg-zinc-200' disabled={isSaving}>
+					<Button className='w-full accent-glow' disabled={isSaving}>
 						<Plus className='mr-2 size-4' />
 						Create Playlist
 					</Button>
@@ -88,12 +101,12 @@ const AddPlaylistDialog = ({ compact = false }: AddPlaylistDialogProps) => {
 					<Button
 						variant='outline'
 						onClick={() => setIsOpen(false)}
-						className='border-zinc-800 bg-transparent'
+						className='border-white/10 bg-transparent text-white hover:bg-white/10'
 						disabled={isSaving}
 					>
 						Cancel
 					</Button>
-					<Button onClick={handleCreatePlaylist} className='bg-green-500 text-black hover:bg-green-400' disabled={isSaving}>
+					<Button onClick={handleCreatePlaylist} className='accent-glow' disabled={isSaving}>
 						{isSaving ? "Creating..." : "Create"}
 					</Button>
 				</DialogFooter>

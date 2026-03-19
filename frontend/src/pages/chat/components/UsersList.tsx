@@ -2,9 +2,11 @@ import UsersListSkeleton from "@/components/skeletons/UserListSkeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChatStore } from "@/stores/useChatStore";
+import { useNavigate } from "react-router-dom";
 
 const UsersList = () => {
 	const { users, selectedUser, isLoading, setSelectedUser, onlineUsers } = useChatStore();
+	const navigate = useNavigate();
 
 	return (
 		<div className='border-r border-zinc-800'>
@@ -17,7 +19,7 @@ const UsersList = () => {
 							users.map((user) => (
 								<div
 									key={user._id}
-									onClick={() => setSelectedUser(user)}
+									onClick={() => navigate(`/chat/${user.clerkId}`)}
 									className={`flex items-center justify-center lg:justify-start gap-3 p-3 
 										rounded-lg cursor-pointer transition-colors
                     ${selectedUser?.clerkId === user.clerkId ? "bg-zinc-800" : "hover:bg-zinc-800/50"}`}

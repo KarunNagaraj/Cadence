@@ -7,6 +7,8 @@ import ChatHeader from "./components/ChatHeader.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import MessageInput from "./components/MessageInput";
+import { useParams } from "react-router-dom";
+
 
 const formatTime = (date: string) => {
 	return new Date(date).toLocaleTimeString("en-US", {
@@ -18,7 +20,8 @@ const formatTime = (date: string) => {
 
 const ChatPage = () => {
 	const { user } = useUser();
-	const { messages, selectedUser, fetchUsers, fetchMessages } = useChatStore();
+	const { users, messages, selectedUser, fetchUsers, fetchMessages, setSelectedUser } = useChatStore();
+	const { userId } = useParams();
 
 	useEffect(() => {
 		if (user) fetchUsers();
@@ -27,6 +30,21 @@ const ChatPage = () => {
 	useEffect(() => {
 		if (selectedUser) fetchMessages(selectedUser.clerkId);
 	}, [selectedUser, fetchMessages]);
+
+	useEffect(() => {
+	if (!userId) {
+		setSelectedUser(null);
+		return;
+	}
+
+	if (users.length === 0) return;
+
+	const matchedUser = users.find((user) => user.clerkId === userId);
+
+	if (matchedUser) {
+		setSelectedUser(matchedUser);
+	}
+	}, [userId, users, setSelectedUser]);
 
 	console.log({ messages });
 
